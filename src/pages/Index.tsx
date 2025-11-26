@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +23,8 @@ const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [activeSection, setActiveSection] = useState('home');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems: MenuItem[] = [
     { id: 1, name: 'Пепперони', description: 'Острая пепперони, моцарелла, томатный соус', price: 450, category: 'pizza', image: '🍕' },
@@ -94,14 +97,15 @@ const Index = () => {
 
             <nav className="hidden md:flex items-center gap-6">
               <button onClick={() => scrollToSection('home')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'home' ? 'font-bold' : ''}`}>Главная</button>
-              <button onClick={() => scrollToSection('menu')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'menu' ? 'font-bold' : ''}`}>Меню</button>
+              <Link to="/menu" className="text-secondary hover:text-primary transition-colors">Меню</Link>
               <button onClick={() => scrollToSection('promotions')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'promotions' ? 'font-bold' : ''}`}>Акции</button>
               <button onClick={() => scrollToSection('delivery')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'delivery' ? 'font-bold' : ''}`}>Доставка</button>
               <button onClick={() => scrollToSection('about')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'about' ? 'font-bold' : ''}`}>О нас</button>
               <button onClick={() => scrollToSection('contacts')} className={`text-secondary hover:text-primary transition-colors ${activeSection === 'contacts' ? 'font-bold' : ''}`}>Контакты</button>
             </nav>
 
-            <Sheet>
+            <div className="flex items-center gap-3">
+              <Sheet>
               <SheetTrigger asChild>
                 <Button className="relative bg-primary hover:bg-primary/90 text-white">
                   <Icon name="ShoppingCart" size={20} />
@@ -169,6 +173,48 @@ const Index = () => {
                 </div>
               </SheetContent>
             </Sheet>
+
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Icon name="Menu" size={24} className="text-secondary" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px]">
+                <SheetHeader>
+                  <SheetTitle className="text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="text-4xl">🚴</div>
+                      <div>
+                        <h2 className="text-xl font-bold text-secondary">4 ВКУСА</h2>
+                        <p className="text-xs text-secondary/70">Доставка еды</p>
+                      </div>
+                    </div>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-4 mt-8">
+                  <button onClick={() => { scrollToSection('home'); setMobileMenuOpen(false); }} className="text-lg text-secondary hover:text-primary transition-colors py-2 text-left">
+                    Главная
+                  </button>
+                  <Link to="/menu" className="text-lg text-secondary hover:text-primary transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
+                    Меню
+                  </Link>
+                  <button onClick={() => { scrollToSection('promotions'); setMobileMenuOpen(false); }} className="text-lg text-secondary hover:text-primary transition-colors py-2 text-left">
+                    Акции
+                  </button>
+                  <button onClick={() => { scrollToSection('delivery'); setMobileMenuOpen(false); }} className="text-lg text-secondary hover:text-primary transition-colors py-2 text-left">
+                    Доставка
+                  </button>
+                  <button onClick={() => { scrollToSection('about'); setMobileMenuOpen(false); }} className="text-lg text-secondary hover:text-primary transition-colors py-2 text-left">
+                    О нас
+                  </button>
+                  <button onClick={() => { scrollToSection('contacts'); setMobileMenuOpen(false); }} className="text-lg text-secondary hover:text-primary transition-colors py-2 text-left">
+                    Контакты
+                  </button>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
           </div>
         </div>
       </header>
@@ -187,7 +233,7 @@ const Index = () => {
               Пицца, суши, бургеры и многое другое — горячим и свежим прямо к вашей двери
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg px-8" onClick={() => scrollToSection('menu')}>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg px-8" onClick={() => navigate('/menu')}>
                 Смотреть меню
                 <Icon name="ChevronRight" size={24} className="ml-2" />
               </Button>
@@ -362,7 +408,7 @@ const Index = () => {
                     <Icon name="Clock" size={24} className="text-primary" />
                     <div>
                       <CardTitle className="text-secondary">Режим работы</CardTitle>
-                      <CardDescription className="text-lg">Ежедневно с 10:00 до 23:00</CardDescription>
+                      <CardDescription className="text-lg">Ежедневно с 10:00 до 22:00</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
