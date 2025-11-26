@@ -21,6 +21,7 @@ interface CartItem extends MenuItem {
 const Index = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [activeSection, setActiveSection] = useState('home');
+  const [activeCategory, setActiveCategory] = useState('all');
 
   const menuItems: MenuItem[] = [
     { id: 1, name: 'Пепперони', description: 'Острая пепперони, моцарелла, томатный соус', price: 450, category: 'pizza', image: '🍕' },
@@ -60,11 +61,23 @@ const Index = () => {
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const filteredMenuItems = activeCategory === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === activeCategory);
+
   const scrollToSection = (id: string) => {
     setActiveSection(id);
     const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const categories = [
+    { id: 'all', label: 'Все' },
+    { id: 'pizza', label: 'Пицца' },
+    { id: 'burgers', label: 'Бургеры' },
+    { id: 'sushi', label: 'Суши' },
+    { id: 'drinks', label: 'Напитки' },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -190,26 +203,26 @@ const Index = () => {
       <section id="promotions" className="py-16 bg-primary/10">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center text-secondary mb-12">🔥 Акции и спецпредложения</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             <Card className="border-2 border-primary/30 hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="text-4xl mb-2">🎁</div>
                 <CardTitle className="text-secondary">Бесплатная доставка</CardTitle>
-                <CardDescription>При заказе от 1000 ₽</CardDescription>
+                <CardDescription className="text-base">При заказе от 1200 ₽<br />В Энергетик 140-ые м-ны бесплатно</CardDescription>
               </CardHeader>
             </Card>
             <Card className="border-2 border-primary/30 hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="text-4xl mb-2">🍕</div>
-                <CardTitle className="text-secondary">Две пиццы по цене одной</CardTitle>
-                <CardDescription>Каждый вторник с 12:00 до 18:00</CardDescription>
+                <div className="text-4xl mb-2">🏃</div>
+                <CardTitle className="text-secondary">Самовывоз —10%</CardTitle>
+                <CardDescription className="text-base">Скидка на все заказы при самовывозе<br /><span className="text-xs text-muted-foreground">При оплате картой дополнительно —5%</span></CardDescription>
               </CardHeader>
             </Card>
             <Card className="border-2 border-primary/30 hover:shadow-xl transition-shadow">
               <CardHeader>
                 <div className="text-4xl mb-2">⚡</div>
                 <CardTitle className="text-secondary">Скидка 20% первый заказ</CardTitle>
-                <CardDescription>Для новых клиентов по промокоду NEW20</CardDescription>
+                <CardDescription className="text-base">Для новых клиентов по промокоду NEW20</CardDescription>
               </CardHeader>
             </Card>
           </div>
@@ -222,15 +235,20 @@ const Index = () => {
           <p className="text-center text-secondary/70 mb-12 text-lg">Выбирайте любимые блюда и добавляйте в корзину</p>
 
           <div className="mb-8 flex flex-wrap gap-3 justify-center">
-            {['Все', 'Пицца', 'Бургеры', 'Суши', 'Напитки'].map((cat, idx) => (
-              <Button key={idx} variant={idx === 0 ? 'default' : 'outline'} className={idx === 0 ? 'bg-primary hover:bg-primary/90 text-white' : 'border-secondary text-secondary hover:bg-secondary hover:text-white'}>
-                {cat}
+            {categories.map((cat) => (
+              <Button 
+                key={cat.id} 
+                variant={activeCategory === cat.id ? 'default' : 'outline'} 
+                onClick={() => setActiveCategory(cat.id)}
+                className={activeCategory === cat.id ? 'bg-primary hover:bg-primary/90 text-white' : 'border-secondary text-secondary hover:bg-secondary hover:text-white'}
+              >
+                {cat.label}
               </Button>
             ))}
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {menuItems.map((item, idx) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {filteredMenuItems.map((item, idx) => (
               <Card key={item.id} className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fade-in" style={{ animationDelay: `${idx * 0.1}s` }}>
                 <CardHeader>
                   <div className="text-6xl mb-3 text-center">{item.image}</div>
@@ -270,20 +288,24 @@ const Index = () => {
               <p className="text-white/80">Доставка по всему городу без выходных</p>
             </div>
           </div>
-          <div className="mt-12 max-w-2xl mx-auto bg-white/10 backdrop-blur rounded-xl p-6">
+          <div className="mt-12 max-w-3xl mx-auto bg-white/10 backdrop-blur rounded-xl p-6">
             <h3 className="text-2xl font-bold mb-4">Зоны доставки</h3>
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <Icon name="Check" size={20} className="text-primary" />
-                <span>Центральный район — бесплатно от 500 ₽</span>
+                <span>Энергетик (140-ые м-ны) — бесплатная доставка</span>
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="Check" size={20} className="text-primary" />
-                <span>Остальные районы — бесплатно от 1000 ₽</span>
+                <span>Остальные районы — бесплатно от 1200 ₽</span>
               </li>
               <li className="flex items-center gap-2">
                 <Icon name="Check" size={20} className="text-primary" />
                 <span>Минимальный заказ — 300 ₽</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Icon name="Check" size={20} className="text-primary" />
+                <span>Самовывоз — скидка 10% (при оплате картой доп. 5%)</span>
               </li>
             </ul>
           </div>
